@@ -7,8 +7,10 @@ RUN apt-get update && \
 
 RUN useradd -m -s /bin/bash ${UNAME}
 
+# Add user to the sudo group
 RUN usermod -aG sudo ${UNAME}
 
+# Enable passwordless sudo for the user
 RUN echo '%sudo         ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers
 
 COPY ./${UNAME}.pub /home/${UNAME}/.ssh/authorized_keys
@@ -16,6 +18,7 @@ COPY ./${UNAME}.pub /home/${UNAME}/.ssh/authorized_keys
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 RUN chown -R ${UNAME}:${UNAME} /home/${UNAME}/.ssh
+
 RUN chmod 600 /home/${UNAME}/.ssh/authorized_keys
 
 ENTRYPOINT service ssh start && bash
